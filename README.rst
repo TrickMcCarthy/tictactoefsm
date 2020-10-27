@@ -13,6 +13,16 @@ Three in a row can be hirizontal, vertical or diagonal.
 Its common that no-one wins and that is a Tie game.
 
 ---------------
+Instructions
+---------------
+`python src/run_script.py`
+
+---------------
+TESTS
+---------------
+`make test`
+
+---------------
 Design
 --------------
 Instead of a game loop, just for fun the implementation uses a finite state machine to switch between player turns.
