@@ -1,0 +1,11 @@
+graph {
+    StartState -- TurnState[color=red,penwidth=3.0];
+    TurnState -- TurnStateP2;
+    TurnStateP2 -- TurnStateP1;
+    TurnStateP1 -- TurnStateP2;
+    TurnStateP2 -- TurnStateP1;
+    TurnStateP1 -- TurnStateP2;
+    TurnStateP2 -- TurnStateP1;
+    TurnStateP1 -- GameOverState[color=red,penwidth=3.0];
+    GameOverState -- StartState 
+    }
