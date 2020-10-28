@@ -1,11 +1,12 @@
 Simple Tic Toc Toe
-========================
+******************
 
-This simple project is a simple tic toc toe game.
+This project is a simple tic toc toe game using Finite State Machine
 
 ---------------
 
-Tic Tac Toe - 
+Tic Tac Toe -
+############# 
 This is a game normally played with paper and pencil and often called noughts and crosses.
 The game is played on a 9-box grid and each player selects their mark as X or O
 They take turns placing their mark in one of the 9 boxes and the first to achieve three in a row wins.
@@ -15,29 +16,40 @@ Its common that no-one wins and that is a Tie game.
 ---------------
 Instructions
 ---------------
-`python src/run_script.py`
+``python src/run_script.py``
 
 ---------------
 TESTS
 ---------------
-`make test`
+``make test``
 
 ---------------
 Design
---------------
+---------------
 Instead of a game loop, just for fun the implementation uses a finite state machine to switch between player turns.
-image:: images/tictactoe_fsm.png
+StartState -> TurnState -> EndState ->StartState
 
 ------------------
 Next Steps
------------------
-Change the display to use Raspberry Pi SenseHat instead of txt output
+------------------
+Change the display to use Raspberry Pi SenseHat and txt output
 Change the display to use tkinter
 Add db to provide high score history
 
-------------
+Running Instructions
+--------------------
+.. warning:: I used pyenv 3.7.9, this takes 20mins to recompile during installation on raspberryPi 3. It required 
+             ``sudo apt-get install python-scipy``
+             ``sudo apt update``
+             ``sudo apt install libatlas-base-dev``
+             ``sudo apt install libopenjp2-7 sense-hat``
+             ``pip install sense-hat rtimulib``
+
+``python src/run_scripts.py``
+
+---------------------
 Sensehat installation
------------
+---------------------
 1. Buy a sense hat and plug it into the raspberry pi when its switched off
 2. Update raspberry pi O/S `sudu apt update`
 3. install sense hat `sudo apt install sense-hat`

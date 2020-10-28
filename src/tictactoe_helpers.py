@@ -1,8 +1,59 @@
 #Tac Toe
 
 import random
-#from tictactoe_fsm import SimpleDevice
+from sense_hat import SenseHat
+from time import sleep
+#Player pick grid position from a 9-box layout and these are matched to sensorhat grid
+GridPos = {
+          1:48, #botleft
+          2:51, #botmid
+          3:54, #botright
+          4:24, #midleft
+          5:27, #midmid
+          6:30, #midright
+          7:0,  #topleft
+          8:3,  #topmid
+          9:6   #topright
+          }
 
+blue = (0, 0, 255)
+red = (255, 0, 0)
+
+w = (150, 150, 150)
+e = (0, 0, 0)
+
+grid = [
+e,e,w,e,e,w,e,e,
+e,e,w,e,e,w,e,e,
+w,w,w,w,w,w,w,w,
+e,e,w,e,e,w,e,e,
+e,e,w,e,e,w,e,e,
+w,w,w,w,w,w,w,w,
+e,e,w,e,e,w,e,e,
+e,e,w,e,e,w,e,e
+]
+
+global sense
+global sensehat_available
+no_players = 0
+
+try:
+  sense = SenseHat()
+  sensehat_available = True
+except Exception as e:
+  print(e)
+  print("Text mode only")
+  sensehat_available = False
+
+
+def updateGrid(pos,color):
+    global grid
+    if isinstance(pos, int):
+       grid[GridPos[pos]]   = color
+       grid[GridPos[pos]+1] = color
+       grid[GridPos[pos]+8] = color
+       grid[GridPos[pos]+9] = color
+    
 def drawBoard(board):
 # This function prints out the board that it was passed.
 # "board" is a list of 10 strings representing the board (ignore index 0)
@@ -17,15 +68,29 @@ def drawBoard(board):
     print('   |   |')
     print(' ' + board[1] + ' | ' + board[2] + ' | ' + board[3])
     print('   |   |')
+    if sensehat_available:
+       try:
+         global grid
+         sense.set_pixels(grid)
+       except Exception as e:
+         print(e)
+        
 
 def inputPlayerLetter(letterChoice = ''):
     # Lets the player type which letter they want to be.
     # Returns a list with the player's letter as the first item, and the computer's letter as the second.
+    global no_players
+    while not (no_players == 1 or no_players == 2):
+       print('1 or 2 Players?')
+       no_players = int(input())
+   
     letter = letterChoice.upper()
     while not (letter == 'X' or letter == 'O'):
        print('Do you want to be X or O?')
        letter = input().upper()
-
+       if sensehat_available:
+          sense.clear((0, 0, 0))
+       drawBoard(theBoard)
     # the first element in the tuple is the player's letter, the second is the computer's letter.
     if letter == 'X':
        return ['X', 'O']
@@ -35,17 +100,26 @@ def inputPlayerLetter(letterChoice = ''):
 def whoGoesFirst():
     # Randomly choose the player who goes first.
     if random.randint(0, 1) == 0:
-       return 'ComputerTurn'
+       return 'Player2Turn'
     else:
-       return 'PlayerTurn'
+       return 'Player1Turn'
 
 def anotherGame():
+    global device, grid, theBoard, playerLetter, computerLetter
+    w = (150, 150, 150)
+    e = (0, 0, 0)
+    if sensehat_available:
+       sense.clear((0, 0, 0))
     if playAgain():
-       global device
-       global theBoard 
-       global playerLetter, computerLetter 
        # Reset the board
        theBoard = [' '] * 10
+       grid = [e,e,w,e,e,w,e,e,e,e,w,e,e,w,e,e,w,w,w,w,w,w,w,w,e,e,w,e,e,w,e,e,e,e,w,e,e,w,e,e,w,w,w,w,w,w,w,w,e,e,w,e,e,w,e,e,e,e,w,e,e,w,e,e]
+       if sensehat_available:
+          try:
+              sense.set_pixels(grid)
+          except Exception as e:
+              print("Exception {}",e)
+           
        playerLetter, computerLetter = inputPlayerLetter()
        turn = whoGoesFirst()
        print('The ' + turn + ' will go first.')
@@ -61,8 +135,27 @@ def playAgain(choice = ''):
        return choice.lower().startswith('y')
        
 
-def makeMove(board, letter, move):
+def makeMove(board, letter, move, who):
+    global blue, red
     board[move] = letter
+    color = blue
+    if who == "computer":
+       color = red
+
+    updateGrid(move,color)
+    if sensehat_available:
+       try:
+          global grid 
+          sense.set_pixels(grid)
+       except Exception as e:
+          print("Exception {}",e)
+
+
+def checkMove(board, letter, move, who):
+    global blue, red
+    board[move] = letter
+    color = blue
+    
 
 def isWinner(bo, le):
     # Given a board and a player's letter, this function returns True if that player has won.
@@ -121,7 +214,7 @@ def getComputerMove(board, computerLetter):
     for i in range(1, 10):
         copy = getBoardCopy(board)
         if isSpaceFree(copy, i):
-           makeMove(copy, computerLetter, i)
+           checkMove(copy, computerLetter, i, "computer")
            if isWinner(copy, computerLetter):
               return i
     
@@ -145,8 +238,14 @@ def isBoardFull(board):
 def setupGame(arg_device):
     global device
     global theBoard 
-    global playerLetter, computerLetter 
+    global playerLetter, computerLetter
     device = arg_device
+    if sensehat_available:
+       try:
+          sense.clear((0, 0, 0))
+       except Exception as e:
+          print("Exception {}",e)
+
     # Reset the board
     theBoard = [' '] * 10
     playerLetter, computerLetter = inputPlayerLetter()
@@ -157,13 +256,17 @@ def setupGame(arg_device):
 
 def playerActions():
     # Player's turn.
-    drawBoard(theBoard)
+    opponent = "Computer"
+    global no_players
+    if no_players == 2:
+       opponent = "Player2"
     move = getPlayerMove(theBoard)
-    makeMove(theBoard, playerLetter, move)
+    makeMove(theBoard, playerLetter, move, "player")
+    drawBoard(theBoard)
 
     if isWinner(theBoard, playerLetter):
        drawBoard(theBoard)
-       print('Hooray! You have won the game!')
+       print('Hooray! Player1 has won the game!')
        device.on_event('PlayerWin')
     else:
        if isBoardFull(theBoard):
@@ -171,18 +274,25 @@ def playerActions():
           print('The game is a tie!')
           device.on_event('Tie')
        else:
-          print('The next turn is computer!')
-          device.on_event('ComputerTurn')
+          print('The next turn is {}!'.format(opponent))
+          device.on_event('Player2Turn')
 
 
 def computerActions():
-    # Computer's turn.
-    move = getComputerMove(theBoard, computerLetter)
-    makeMove(theBoard, computerLetter, move)
+    opponent = "Computer"
+    global no_players
+    if no_players == 2:
+       move = getPlayerMove(theBoard)
+       opponent = "Player2"
+    else: #computers turn
+       move = getComputerMove(theBoard, computerLetter)
+
+    makeMove(theBoard, computerLetter, move, "computer")
+    drawBoard(theBoard)
 
     if isWinner(theBoard, computerLetter):
        drawBoard(theBoard)
-       print('The computer has beaten you! You lose.')
+       print('The {} has beaten you! You lose.'.format(opponent))
        device.on_event('ComputerWin')
     else:
        if isBoardFull(theBoard):
@@ -190,6 +300,6 @@ def computerActions():
           print('The game is a tie!')
           device.on_event('Tie')
        else:
-          print('The next turn is Player!')
-          device.on_event('PlayerTurn')
+          print('The next turn is Player1!')
+          device.on_event('Player1Turn')
 

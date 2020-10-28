@@ -1,1 +1,3 @@
 sphinx
+docutils
+sense-hat

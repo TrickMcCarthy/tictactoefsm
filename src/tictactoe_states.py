@@ -9,10 +9,10 @@ class TurnState(State):
       """
 
       def on_event(self, event):
-          if event == 'PlayerTurn':
+          if event == 'Player1Turn':
              playerActions()
              return TurnState()
-          if event == 'ComputerTurn':
+          if event == 'Player2Turn':
              computerActions()
              return TurnState()
           if event == 'ComputerWin' or event == 'PlayerWin' or event == 'Tie':
@@ -22,7 +22,6 @@ class TurnState(State):
                 return EndState()
 
           return self
-
 
 class EndState(State):
       """
@@ -38,7 +37,6 @@ class StartState(State):
 
       def on_event(self, event):
           if event == 'Start':
-             print("StartState")
              return TurnState()
              
           return self
