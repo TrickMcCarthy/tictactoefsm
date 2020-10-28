@@ -13,6 +13,9 @@ They take turns placing their mark in one of the 9 boxes and the first to achiev
 Three in a row can be hirizontal, vertical or diagonal.
 Its common that no-one wins and that is a Tie game.
 
+Supports 2 players
+Supports 2 levels of difficulty for computer opponent
+
 ---------------
 Instructions
 ---------------
@@ -32,13 +35,13 @@ StartState -> TurnState -> EndState ->StartState
 ------------------
 Next Steps
 ------------------
-Change the display to use Raspberry Pi SenseHat and txt output
+Change the display to use Raspberry Pi SenseHat and txt output - Done
 Change the display to use tkinter
 Add db to provide high score history
 
 Running Instructions
 --------------------
-.. warning:: I used pyenv 3.7.9, this takes 20mins to recompile during installation on raspberryPi 3. It required 
+.. warning:: I used pyenv 3.9.0, this takes 20mins to recompile during installation on raspberryPi 3. It required 
              ``sudo apt-get install python-scipy``
              ``sudo apt update``
              ``sudo apt install libatlas-base-dev``
@@ -56,3 +59,12 @@ Sensehat installation
 4. reboot `sudo reboot`
 5. Sense hat examples can be found here '/usr/src/sense-hat/examples'
 6. More sensehat info https://pythonhosted.org/sense-hat/
+
+-----------
+Environment
+-----------
+Upgraded to python 3.9.0 because tk would not work with earlier versions
+Sense hat didn't work with 3.9.0, install RTIMULib manually to fix this
+git clone https://github.com/RPi-Distro/RTIMULib
+Follow README.md on building and installing it
+
