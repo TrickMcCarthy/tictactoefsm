@@ -36,6 +36,7 @@ e,e,w,e,e,w,e,e
 global sense
 global sensehat_available
 no_players = 0
+difficulty = 3
 
 try:
   sense = SenseHat()
@@ -79,11 +80,15 @@ def drawBoard(board):
 def inputPlayerLetter(letterChoice = ''):
     # Lets the player type which letter they want to be.
     # Returns a list with the player's letter as the first item, and the computer's letter as the second.
-    global no_players
+    global no_players, difficulty
     while not (no_players == 1 or no_players == 2):
        print('1 or 2 Players?')
        no_players = int(input())
-   
+       if no_players == 1:
+          while not (difficulty == 1 or difficulty == 0):
+             print('Difficulty level 0 or 1?')
+             difficulty = int(input())
+		
     letter = letterChoice.upper()
     while not (letter == 'X' or letter == 'O'):
        print('Do you want to be X or O?')
@@ -217,13 +222,24 @@ def getComputerMove(board, computerLetter):
            checkMove(copy, computerLetter, i, "computer")
            if isWinner(copy, computerLetter):
               return i
+
+    if difficulty == 1:
+       #Check if Player will win in next move and block
+       for i in range(1, 10):
+           copy = getBoardCopy(board)
+           if isSpaceFree(copy, i):
+              checkMove(copy, playerLetter, i, "player")
+           if isWinner(copy, playerLetter):
+              return i
     
+    if difficulty == 1:
+       #Try to take the center if its is free
+       if isSpaceFree(board, 5):
+          return 5
+
     move = chooseRandomMoveFromList(board, [1, 3, 7, 9])
     if move != None:
        return move
-    #Try to take the center if its is free
-    if isSpaceFree(board, 5):
-        return 5
     #Move on one of the sides.
     return chooseRandomMoveFromList(board, [2, 4, 6, 8])
 

@@ -13,6 +13,8 @@ They take turns placing their mark in one of the 9 boxes and the first to achiev
 Three in a row can be hirizontal, vertical or diagonal.
 Its common that no-one wins and that is a Tie game.
 
+Supports 2 players
+
 ---------------
 Instructions
 ---------------
