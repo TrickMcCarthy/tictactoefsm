@@ -15,6 +15,7 @@ Its common that no-one wins and that is a Tie game.
 
 Supports 2 players
 Supports 2 levels of difficulty for computer opponent
+=======
 
 ---------------
 Instructions
